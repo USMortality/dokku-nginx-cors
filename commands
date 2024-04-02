@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+[[ " help nginx-cors:help " == *" $1 "* ]] || exit "$DOKKU_NOT_IMPLEMENTED_EXIT"
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+
+case "$1" in
+
+help | nginx-cors:help)
+  help_content_func() {
+    declare desc="return help_content string"
+    cat <<help_content
+      nginx-cors:enable <app>, Enable nginx CORS for <app>
+      nginx-cors:disable <app>, Disable nginx CORS for <app>
+help_content
+  }
+
+  if [[ $1 = "nginx-cors:help" ]]; then
+    echo -e 'Usage: dokku nginx-cors[:COMMAND]'
+    echo ''
+    echo 'Enable or disable cache for single apps'
+    echo ''
+    echo 'Additional commands:'
+    help_content_func | sort | column -c2 -t -s,
+  elif [[ $(ps -o command= $PPID) == *"--all"* ]]; then
+    help_content_func
+  else
+    cat <<help_desc
+    nginx-cors, Plugin to easily enable CORS
+help_desc
+  fi
+  ;;
+
+*)
+  exit "$DOKKU_NOT_IMPLEMENTED_EXIT"
+  ;;
+
+esac
